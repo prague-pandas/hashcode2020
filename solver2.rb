@@ -2,7 +2,7 @@
 
 files = {"b_read_on.txt" => 4705100, "c_incunabula.txt" => 1021223, "d_tough_choices.txt" => 4366895, "e_so_many_books.txt" => 890995, "f_libraries_of_the_world.txt" => 1729372}
 
-file = {ARGV[0] => 890995}
+file = {ARGV[0] => 0}
 
 @shuffle_indexes = [0,0]
 
