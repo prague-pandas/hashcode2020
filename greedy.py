@@ -14,13 +14,11 @@ def order_libraries(libraries, scores_of_books, num_of_days, random_beam=0):
         scores_of_libraries = {}
         books_of_libraries = {}
         if random_beam:
-            print('random')
             indices = random.sample(
                 available_libraries_indices,
                 min(random_beam, len(available_libraries_indices)))
         else:
             indices = available_libraries_indices
-        print('len ind', len(indices))
         for i in indices:
             _, signup_days, books_per_day, list_of_books = libraries[i]
             scores_of_libraries[i], books_of_libraries[i] = score_library(list_of_books,
@@ -31,7 +29,7 @@ def order_libraries(libraries, scores_of_books, num_of_days, random_beam=0):
                                                      num_of_remaining_days)
         best_library = max(scores_of_libraries, key=scores_of_libraries.get)
         best_score = scores_of_libraries[best_library]
-        print(best_library, scores_of_libraries[best_library])
+        #print(best_library, scores_of_libraries[best_library])
         ordered_libraries.append((best_library,
                                   books_of_libraries[best_library]))
         _, signup_days, books_per_day, list_of_books = libraries[best_library]
