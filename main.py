@@ -115,4 +115,4 @@ if __name__ == '__main__':
                                               random_beam=args.random_beam)
             scor = score(solution, d, s, library_signup_times, library_ship_capacities)
             print(f'Greedy randomized score: {scor}')
-            save_result(f'{f}_{str(scor).zfill(8)}_greedy.out', solution)
+            save_result(f'{f}_{str(scor).zfill(8)}_greedy_radomized.out', solution)
