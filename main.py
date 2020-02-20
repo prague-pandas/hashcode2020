@@ -88,7 +88,7 @@ if __name__ == '__main__':
     parser.add_argument('--iterations', type=int, default=1, help='-1: run forever')
     args = parser.parse_args()
 
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
 
     np.seterr(all='raise')
 

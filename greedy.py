@@ -1,6 +1,7 @@
 from load_file import load_libraries
 from main import score
 import numpy as np
+import logging
 
 
 def order_libraries(libraries, scores_of_books, num_of_days):
@@ -22,7 +23,7 @@ def order_libraries(libraries, scores_of_books, num_of_days):
                                                      num_of_remaining_days)
         best_library = max(scores_of_libraries, key=scores_of_libraries.get)
         best_score = scores_of_libraries[best_library]
-        print(best_library, scores_of_libraries[best_library])
+        logging.debug({'library': best_library, 'score': scores_of_libraries[best_library]})
         ordered_libraries.append((best_library,
                                   books_of_libraries[best_library]))
         _, signup_days, books_per_day, list_of_books = libraries[best_library]
