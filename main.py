@@ -27,6 +27,7 @@ def save_result(filename, libraries):
 def score(solution, days, book_scores, library_signup_times, library_ship_capacities):
     total = 0
     current_time = 0
+    book_scores = book_scores.copy()
     for library, books in solution:
         signup_time = library_signup_times[library]
         ship_capacity = library_ship_capacities[library]
