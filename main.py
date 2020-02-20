@@ -49,10 +49,11 @@ if __name__ == '__main__':
 
     np.random.seed(0)
 
-    for f in glob.glob('input/*.txt'):
+    for f in sorted(glob.glob('input/*.txt')):
         print(f)
         b, l, d, s, libraries = load_file.load_libraries(f)
         s = np.asarray(s, dtype=np.uint)
+        print(f'Score upper bound: {np.sum(s)}')
         library_signup_times = [lib[1] for lib in libraries]
         library_ship_capacities = [lib[2] for lib in libraries]
         solution = [(1, [5, 2, 3]), (0, [0, 1, 2, 3, 4])]
