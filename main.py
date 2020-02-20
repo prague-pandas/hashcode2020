@@ -5,6 +5,8 @@ import logging
 
 import numpy as np
 
+import greedy
+
 
 def load_libraries(filename):
     with open(filename) as f:
@@ -73,7 +75,7 @@ def solve_random(name, d, s, libraries, iterations=None):
         scor = score(solution, d, s, library_signup_times, library_ship_capacities)
         if scor > best_score:
             logging.info(f'New best score in iteration {i}: {scor}')
-            save_result(f'{name}_{str(scor).zfill(8)}.out', solution)
+            save_result(f'{name}_{str(scor).zfill(8)}_random.out', solution)
             best_score = scor
     return best_score
 
@@ -81,6 +83,8 @@ def solve_random(name, d, s, libraries, iterations=None):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', default='input/*.txt')
+    parser.add_argument('--random', action='store_true')
+    parser.add_argument('--greedy', action='store_true')
     parser.add_argument('--iterations', type=int, default=1, help='-1: run forever')
     args = parser.parse_args()
 
@@ -95,6 +99,12 @@ if __name__ == '__main__':
         b, l, d, s, libraries = load_libraries(f)
         s = np.asarray(s, dtype=np.uint)
         print(f'Score upper bound: {np.sum(s)}')
-        library_signup_times = [lib[1] for lib in libraries]
-        library_ship_capacities = [lib[2] for lib in libraries]
-        solve_random(f, d, s, libraries, args.iterations)
+        library_signup_times = np.asarray([lib[1] for lib in libraries], dtype=np.uint)
+        library_ship_capacities = np.asarray([lib[2] for lib in libraries], dtype=np.uint)
+        if args.random:
+            solve_random(f, d, s, libraries, args.iterations)
+        if args.greedy:
+            solution = greedy.order_libraries(libraries, s, d)
+            scor = score(solution, d, s, library_signup_times, library_ship_capacities)
+            print(f'Greedy score: {scor}')
+            save_result(f'{f}_{str(scor).zfill(8)}_greedy.out', solution)
