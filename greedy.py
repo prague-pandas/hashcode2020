@@ -4,9 +4,11 @@ import numpy as np
 
 from load_file import load_libraries
 from main import score
+import numpy as np
+import random
 
 
-def order_libraries(libraries, scores_of_books, num_of_days):
+def order_libraries(libraries, scores_of_books, num_of_days, random_beam=0):
     ordered_libraries = []
     available_libraries_indices = set(range(len(libraries)))
     excluded_books = set()
@@ -18,7 +20,13 @@ def order_libraries(libraries, scores_of_books, num_of_days):
     while available_libraries_indices and num_of_remaining_days and best_score:
         scores_of_libraries = {}
         books_of_libraries = {}
-        for i in available_libraries_indices:
+        if random_beam:
+            indices = random.sample(
+                available_libraries_indices,
+                min(random_beam, len(available_libraries_indices)))
+        else:
+            indices = available_libraries_indices
+        for i in indices:
             _, signup_days, books_per_day, list_of_books = libraries[i]
             scores_of_libraries[i], books_of_libraries[i] = score_library(list_of_books,
                                                                           signup_days,

@@ -87,6 +87,8 @@ if __name__ == '__main__':
     parser.add_argument('--input', default='input/*.txt')
     parser.add_argument('--random', action='store_true')
     parser.add_argument('--greedy', action='store_true')
+    parser.add_argument('--greedy_randomized', action='store_true')
+    parser.add_argument('--random_beam', type=int, default=100)
     parser.add_argument('--iterations', type=int, default=1, help='-1: run forever')
     args = parser.parse_args()
 
@@ -110,3 +112,9 @@ if __name__ == '__main__':
             scor = score(solution, d, s, library_signup_times, library_ship_capacities)
             print(f'Greedy score: {scor}')
             save_result(f'{f}_{str(scor).zfill(8)}_greedy.out', solution)
+        if args.greedy_randomized:
+            solution = greedy.order_libraries(libraries, s, d,
+                                              random_beam=args.random_beam)
+            scor = score(solution, d, s, library_signup_times, library_ship_capacities)
+            print(f'Greedy randomized score: {scor}')
+            save_result(f'{f}_{str(scor).zfill(8)}_greedy_radomized.out', solution)
