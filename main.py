@@ -1,5 +1,6 @@
 import argparse
 import glob
+import itertools
 import logging
 
 import numpy as np
@@ -58,7 +59,11 @@ def solve_random(name, d, s, libraries, iterations=None):
     library_signup_times = np.asarray([lib[1] for lib in libraries], dtype=np.uint)
     library_ship_capacities = np.asarray([lib[2] for lib in libraries], dtype=np.uint)
     best_score = 0
-    for i in range(iterations):
+    if iterations is None or iterations < 0:
+        i_generator = itertools.count()
+    else:
+        i_generator = range(iterations)
+    for i in i_generator:
         library_order = np.random.permutation(len(libraries))
         solution = list()
         for library_i in library_order:
@@ -76,7 +81,7 @@ def solve_random(name, d, s, libraries, iterations=None):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', default='input/*.txt')
-    parser.add_argument('--iterations', type=int, default=100)
+    parser.add_argument('--iterations', type=int, default=1)
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.DEBUG)
