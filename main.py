@@ -4,7 +4,17 @@ import logging
 
 import numpy as np
 
-import load_file
+
+def load_libraries(filename):
+    with open(filename) as f:
+        b, l, d = map(int, f.readline().split(' '))
+        s = list(map(int, f.readline().split(' ')))
+        libraries = list()
+        for _ in range(l):
+            n, t, m = map(int, f.readline().split(' '))
+            books = list(map(int, f.readline().split(' ')))
+            libraries.append((n, t, m, books))
+        return b, l, d, s, libraries
 
 
 def pizza_load(f):
@@ -70,7 +80,7 @@ if __name__ == '__main__':
 
     for f in sorted(glob.glob('input/*.txt')):
         print(f)
-        b, l, d, s, libraries = load_file.load_libraries(f)
+        b, l, d, s, libraries = load_libraries(f)
         s = np.asarray(s, dtype=np.uint)
         print(f'Score upper bound: {np.sum(s)}')
         library_signup_times = [lib[1] for lib in libraries]
