@@ -35,13 +35,16 @@ def save_result(filename, libraries):
 
 
 def score(solution, days, book_scores, library_signup_times, library_ship_capacities):
-    total = 0
-    current_time = 0
+    total = np.uint(0)
+    current_time = np.uint(0)
+    days = np.uint(days)
     book_scores = book_scores.copy()
     for library, books in solution:
-        signup_time = library_signup_times[library]
-        ship_capacity = library_ship_capacities[library]
+        signup_time = np.uint(library_signup_times[library])
+        ship_capacity = np.uint(library_ship_capacities[library])
         current_time += signup_time
+        if current_time >= days:
+            break
         remaining_time = days - current_time
         n_books_to_be_scanned = remaining_time * ship_capacity
         books_to_be_scanned = books[:n_books_to_be_scanned]
@@ -52,14 +55,15 @@ def score(solution, days, book_scores, library_signup_times, library_ship_capaci
 
 
 def solve_random(name, d, s, libraries, iterations=None):
-    library_signup_times = [lib[1] for lib in libraries]
-    library_ship_capacities = [lib[2] for lib in libraries]
+    library_signup_times = np.asarray([lib[1] for lib in libraries], dtype=np.uint)
+    library_ship_capacities = np.asarray([lib[2] for lib in libraries], dtype=np.uint)
     best_score = 0
     for i in range(iterations):
         library_order = np.random.permutation(len(libraries))
         solution = list()
         for library_i in library_order:
             n, t, m, books = libraries[library_i]
+            books = np.asarray(books, dtype=np.uint)
             solution.append((library_i, np.random.permutation(books)))
         scor = score(solution, d, s, library_signup_times, library_ship_capacities)
         if scor > best_score:
@@ -76,6 +80,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.DEBUG)
+
+    np.seterr(all='raise')
 
     np.random.seed(0)
 
