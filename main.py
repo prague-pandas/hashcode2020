@@ -111,7 +111,8 @@ if __name__ == '__main__':
             print(f'Greedy score: {scor}')
             save_result(f'{f}_{str(scor).zfill(8)}_greedy.out', solution)
         if args.greedy_randomized:
-            solution = greedy.order_libraries(libraries, s, d, random_beam=100)
+            solution = greedy.order_libraries(libraries, s, d,
+                                              random_beam=args.random_beam)
             scor = score(solution, d, s, library_signup_times, library_ship_capacities)
             print(f'Greedy randomized score: {scor}')
             save_result(f'{f}_{str(scor).zfill(8)}_greedy.out', solution)
