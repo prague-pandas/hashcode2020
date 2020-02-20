@@ -30,6 +30,8 @@ def order_libraries(libraries, scores_of_books, num_of_days):
                                                                           book_orders)
         best_library = max(scores_of_libraries, key=scores_of_libraries.get)
         best_score = scores_of_libraries[best_library]
+        if best_score == 0:
+            break
         logging.debug({'library': best_library, 'score': scores_of_libraries[best_library]})
         ordered_libraries.append((best_library,
                                   books_of_libraries[best_library]))
