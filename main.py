@@ -81,7 +81,7 @@ def solve_random(name, d, s, libraries, iterations=None):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', default='input/*.txt')
-    parser.add_argument('--iterations', type=int, default=1)
+    parser.add_argument('--iterations', type=int, default=1, help='-1: run forever')
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.DEBUG)
