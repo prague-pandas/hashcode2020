@@ -15,6 +15,15 @@ def pizza_load(f):
         return s, m
 
 
+def save_result(filename, libraries):
+    with open(filename, 'w') as f:
+        f.write(f'{len(libraries)}\n')
+        for library, books in libraries:
+            f.write(f'{library} {len(books)}\n')
+            f.write(' '.join(map(str, books)))
+            f.write('\n')
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--iterations', type=int, default=100)
@@ -27,4 +36,4 @@ if __name__ == '__main__':
     for f in glob.glob('input/*.txt'):
         print(f)
         b, l, d, s, libraries = load_file.load_libraries(f)
-        print(b)
+        save_result(f'{f}.out', [(1, [5, 2, 3]), (0, [0, 1, 2, 3, 4])])
