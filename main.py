@@ -4,6 +4,8 @@ import logging
 
 import numpy as np
 
+import load_file
+
 
 def pizza_load(f):
     with open(f) as fp:
@@ -22,7 +24,7 @@ if __name__ == '__main__':
 
     np.random.seed(0)
 
-    for f in glob.glob('pizza/*.in'):
-        logging.debug(f)
-        s, m = pizza_load(f)
-        print(m)
+    for f in glob.glob('input/*.txt'):
+        print(f)
+        b, l, d, s, libraries = load_file.load_file(f)
+        print(b)

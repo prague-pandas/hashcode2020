@@ -42,4 +42,13 @@ def load_input(filename):
 	return num_diff_books, num_libraries, num_days, book_scores, library
 
 
-
+def load_file(filename):
+	with open(filename) as f:
+		b, l, d = map(int, f.readline().split(' '))
+		s = list(map(int, f.readline().split(' ')))
+		libraries = list()
+		for _ in range(l):
+			n, t, m = map(int, f.readline().split(' '))
+			books = list(map(int, f.readline().split(' ')))
+			libraries.append((n, t, m, books))
+		return b, l, d, s, libraries
