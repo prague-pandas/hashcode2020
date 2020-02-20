@@ -71,6 +71,7 @@ def solve_random(name, d, s, libraries, iterations=None):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('--input', default='input/*.txt')
     parser.add_argument('--iterations', type=int, default=100)
     args = parser.parse_args()
 
@@ -78,7 +79,7 @@ if __name__ == '__main__':
 
     np.random.seed(0)
 
-    for f in sorted(glob.glob('input/*.txt')):
+    for f in sorted(glob.iglob(args.input)):
         print(f)
         b, l, d, s, libraries = load_libraries(f)
         s = np.asarray(s, dtype=np.uint)
