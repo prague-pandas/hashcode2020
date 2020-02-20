@@ -26,5 +26,5 @@ if __name__ == '__main__':
 
     for f in glob.glob('input/*.txt'):
         print(f)
-        b, l, d, s, libraries = load_file.load_file(f)
+        b, l, d, s, libraries = load_file.load_libraries(f)
         print(b)
