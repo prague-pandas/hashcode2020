@@ -38,7 +38,25 @@ def score(solution, days, book_scores, library_signup_times, library_ship_capaci
         cur_scores = book_scores[books_to_be_scanned]
         total += np.sum(cur_scores)
         book_scores[books_to_be_scanned] = 0
-    return total
+    return int(total)
+
+
+def solve_random(name, d, s, libraries, iterations=None):
+    library_signup_times = [lib[1] for lib in libraries]
+    library_ship_capacities = [lib[2] for lib in libraries]
+    best_score = 0
+    for i in range(iterations):
+        library_order = np.random.permutation(len(libraries))
+        solution = list()
+        for library_i in library_order:
+            n, t, m, books = libraries[library_i]
+            solution.append((library_i, np.random.permutation(books)))
+        scor = score(solution, d, s, library_signup_times, library_ship_capacities)
+        if scor > best_score:
+            logging.info(f'New best score in iteration {i}: {scor}')
+            save_result(f'{name}_{str(scor).zfill(8)}.out', solution)
+            best_score = scor
+    return best_score
 
 
 if __name__ == '__main__':
@@ -57,6 +75,4 @@ if __name__ == '__main__':
         print(f'Score upper bound: {np.sum(s)}')
         library_signup_times = [lib[1] for lib in libraries]
         library_ship_capacities = [lib[2] for lib in libraries]
-        solution = [(1, [5, 2, 3]), (0, [0, 1, 2, 3, 4])]
-        print(score(solution, d, s, library_signup_times, library_ship_capacities))
-        save_result(f'{f}.out', solution)
+        solve_random(f, d, s, libraries, args.iterations)
