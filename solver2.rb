@@ -1,7 +1,5 @@
 #!/usr/bin/ruby
 
-files = {"b_read_on.txt" => 4705100, "c_incunabula.txt" => 1021223, "d_tough_choices.txt" => 4366895, "e_so_many_books.txt" => 890995, "f_libraries_of_the_world.txt" => 1729372}
-
 file = {ARGV[0] => 0}
 
 @shuffle_indexes = [0,0]
@@ -17,7 +15,7 @@ end
 def processBooks books, max, scores
 	books.map do |book|
 		[book, scores[book]]
-	end[0..max-1].sort_by!{|e| e[1]}.reverse.inject([]) do |sum, e|
+	end.sort_by!{|e| e[1]}.reverse[0..max-1].inject([]) do |sum, e|
 		if e[1] > 0
 			scores[e[0]] = 0
 			@finalScore += e[1]
