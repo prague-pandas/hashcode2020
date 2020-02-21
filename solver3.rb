@@ -39,8 +39,11 @@ def processLib head, books, daysLeft, scores
 end
 
 def shuffle(libs, size)
-	@shuffle_indexes = [rand(size), rand(size)]
-	do_swap(libs)
+	((x=rand(size)) / rand(x)).times {
+		@shuffle_indexes = [rand(size), rand(size)]
+		do_swap(libs)
+	}
+	libs
 end
 
 def do_swap(libs)
@@ -48,6 +51,10 @@ def do_swap(libs)
 	libs[@shuffle_indexes[0]] = libs[@shuffle_indexes[1]]
 	libs[@shuffle_indexes[1]] = bak
 	libs
+end
+
+def initSort(libs)
+	libs.shuffle
 end
 
 
@@ -68,10 +75,13 @@ File.open("input/#{file.keys.first}", "r") { |input|
 		id += 1
 	end
 
+	libs_best = initSort(libs)
+
 	while true do
 
 		@finalScore = 0
 		bookScore = bookScore_orig.dup
+		libs = libs_best.dup
 		daysLeft = numD
 
 		ret = []
@@ -89,10 +99,11 @@ File.open("input/#{file.keys.first}", "r") { |input|
 			writeFile(file.keys.first, ret, @finalScore)
 
 			file[file.keys.first] = @finalScore
+
+			libs_best = libs
+
 			puts "#{@finalScore}: #{file}"
 			$stdout.flush
-		else
-			do_swap(libs)
 		end
 	end
  }
