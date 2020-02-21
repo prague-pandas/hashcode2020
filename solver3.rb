@@ -51,7 +51,7 @@ def processLib head, books, daysLeft, scores
 end
 
 def shuffle(libs, size)
-	(((x=rand(size))+1) / (rand(x)+1)).times {
+	(((x=rand(size))+1) / (rand(x)+1)).round.times {
 		@shuffle_indexes = [rand(size), rand(size)]
 		do_swap(libs)
 	}
