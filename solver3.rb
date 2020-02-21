@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-file_name = ARGV[0] ||= "c_incunabula.txt"
+file_name = ARGV[0] ||= "b_read_on.txt"
 
 @starting_score = 0
 
@@ -50,9 +50,9 @@ def processLib head, books, daysLeft, scores
 	[signUp, processedBooks]
 end
 
-def shuffle(libs, size, low_index)
+def shuffle(libs, size)
 	(((x=rand(size))+1) / (rand(x)+1)).round.times {
-		@shuffle_indexes = [rand(low_index), rand(size)]
+		@shuffle_indexes = [rand(@shuffle_low_index), rand(size)]
 		do_swap(libs)
 	}
 	libs
@@ -92,7 +92,7 @@ File.open("input/#{file_name}", "r") { |input|
 	numB, numL, numD = rows.shift.split(" ").map &:to_i
 	bookScore_orig = rows.shift.split(" ").map &:to_i
 
-	shuffle_low_index = [numL, numD].min
+	@shuffle_low_index = [numL, numD].min
 
 	id = 0
 	libs = []
@@ -113,7 +113,7 @@ File.open("input/#{file_name}", "r") { |input|
 
 		ret = []
 
-		shuffle(libs, numL, shuffle_low_index).each do |lib|
+		shuffle(libs, numL).each do |lib|
 			took, books = processLib(lib[1], lib[2], daysLeft, bookScore)
 			daysLeft -= took
 
@@ -128,6 +128,8 @@ File.open("input/#{file_name}", "r") { |input|
 			writeFile(file_name, ret, @finalScore, libs)
 
 			@starting_score = @finalScore
+
+			@shuffle_low_index = libs.size
 
 			libs_best = libs
 
