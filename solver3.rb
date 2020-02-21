@@ -1,8 +1,8 @@
 #!/usr/bin/ruby
 
-ARGV[0] ||= "c_incunabula.txt"
+file_name = ARGV[0] ||= "c_incunabula.txt"
 
-file = {ARGV[0] => 0}
+@starting_score = 0
 
 @startedAt = Time.now.to_i
 
@@ -13,7 +13,7 @@ def writeFile file, ret, score, libs
 
 	File.open("out/#{file}_#{score}.a", "w") { |out|
 		out.write "#{ret.size}\n"
-		out.write ret.join("\n")
+		out.write ret.inject(""){|m,l| m + "#{l[0]} #{l[1]}\n#{l[2].join(" ")}\n"}
 	}
 	File.open("out/_best_#{file}.0", "w") { |out|
 		out.write "#{score}\n"
@@ -50,9 +50,9 @@ def processLib head, books, daysLeft, scores
 	[signUp, processedBooks]
 end
 
-def shuffle(libs, size)
+def shuffle(libs, size, low_index)
 	(((x=rand(size))+1) / (rand(x)+1)).round.times {
-		@shuffle_indexes = [rand(size), rand(size)]
+		@shuffle_indexes = [rand(low_index), rand(size)]
 		do_swap(libs)
 	}
 	libs
@@ -70,7 +70,8 @@ def initSort(libs, file)
 
 	File.open("out/_best_#{file}.0", "r") { |input|
 		rows = input.read.split("\n")
-		score = rows.shift
+		@starting_score = rows.shift.to_i
+
 		indexes = rows.shift.split(" ").map &:to_i
 
 		indexes.each_with_index do |target_index, index|
@@ -85,11 +86,13 @@ end
 numB, numL, numD = nil
 bookScore = []
 
-File.open("input/#{file.keys.first}", "r") { |input| 
+File.open("input/#{file_name}", "r") { |input| 
 	rows = input.read.split("\n")
 
 	numB, numL, numD = rows.shift.split(" ").map &:to_i
 	bookScore_orig = rows.shift.split(" ").map &:to_i
+
+	shuffle_low_index = [numL, numD].min
 
 	id = 0
 	libs = []
@@ -99,7 +102,7 @@ File.open("input/#{file.keys.first}", "r") { |input|
 		id += 1
 	end
 
-	libs_best = initSort(libs, file.keys.first)
+	libs_best = initSort(libs, file_name)
 
 	while true do
 
@@ -110,25 +113,25 @@ File.open("input/#{file.keys.first}", "r") { |input|
 
 		ret = []
 
-		shuffle(libs, numL).each do |lib|
+		shuffle(libs, numL, shuffle_low_index).each do |lib|
 			took, books = processLib(lib[1], lib[2], daysLeft, bookScore)
 			daysLeft -= took
 
-			ret << [[lib[0], books.size].join(" "), books.join(" ")] if books.size > 0
+			ret << [lib[0], books.size, books] if books.size > 0
 
 			break if daysLeft <= 0
 
 			id += 1
 		end
 
-		if @finalScore > file[file.keys.first]
-			writeFile(file.keys.first, ret, @finalScore, libs)
+		if @finalScore > @starting_score
+			writeFile(file_name, ret, @finalScore, libs)
 
-			file[file.keys.first] = @finalScore
+			@starting_score = @finalScore
 
 			libs_best = libs
 
-			puts "#{@finalScore}: #{file}"
+			puts "#{@finalScore}: #{file_name}"
 			$stdout.flush
 		end
 	end
