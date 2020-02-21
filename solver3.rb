@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-ARGV[0] = "c_incunabula.txt"
+ARGV[0] ||= "c_incunabula.txt"
 
 file = {ARGV[0] => 0}
 
