@@ -4,12 +4,24 @@ ARGV[0] = "c_incunabula.txt"
 
 file = {ARGV[0] => 0}
 
+@startedAt = Time.now.to_i
+
 @shuffle_indexes = [0,0]
 
-def writeFile file, ret, score
+def writeFile file, ret, score, libs
+	libs = libs.map{|l| l[0]}.join(" ")
+
 	File.open("out/#{file}_#{score}.a", "w") { |out|
 		out.write "#{ret.size}\n"
 		out.write ret.join("\n")
+	}
+	File.open("out/_best_#{file}.0", "w") { |out|
+		out.write "#{score}\n"
+		out.write libs
+	}
+	File.open("out/_best_#{file}.#{@startedAt}", "w") { |out|
+		out.write "#{score}\n"
+		out.write libs
 	}
 end
 
@@ -39,7 +51,7 @@ def processLib head, books, daysLeft, scores
 end
 
 def shuffle(libs, size)
-	((x=rand(size)) / rand(x)).times {
+	(((x=rand(size))+1) / (rand(x)+1)).times {
 		@shuffle_indexes = [rand(size), rand(size)]
 		do_swap(libs)
 	}
@@ -53,8 +65,20 @@ def do_swap(libs)
 	libs
 end
 
-def initSort(libs)
-	libs.shuffle
+def initSort(libs, file)
+	sorted_libs = []
+
+	File.open("out/_best_#{file}.0", "r") { |input|
+		rows = input.read.split("\n")
+		score = rows.shift
+		indexes = rows.shift.split(" ").map &:to_i
+
+		indexes.each_with_index do |target_index, index|
+			sorted_libs[index] = libs[target_index]
+		end
+	} rescue return libs.shuffle
+
+	sorted_libs
 end
 
 
@@ -75,7 +99,7 @@ File.open("input/#{file.keys.first}", "r") { |input|
 		id += 1
 	end
 
-	libs_best = initSort(libs)
+	libs_best = initSort(libs, file.keys.first)
 
 	while true do
 
@@ -92,11 +116,13 @@ File.open("input/#{file.keys.first}", "r") { |input|
 
 			ret << [[lib[0], books.size].join(" "), books.join(" ")] if books.size > 0
 
+			break if daysLeft <= 0
+
 			id += 1
 		end
 
 		if @finalScore > file[file.keys.first]
-			writeFile(file.keys.first, ret, @finalScore)
+			writeFile(file.keys.first, ret, @finalScore, libs)
 
 			file[file.keys.first] = @finalScore
 
