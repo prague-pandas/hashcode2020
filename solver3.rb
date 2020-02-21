@@ -7,6 +7,7 @@ file_name = ARGV[0] ||= "b_read_on.txt"
 @startedAt = Time.now.to_i
 
 @shuffle_indexes = [0,0]
+@shuffle_factor = 0
 
 def writeFile file, ret, score, libs
 	libs = libs.map{|l| l[0]}.join(" ")
@@ -51,7 +52,8 @@ def processLib head, books, daysLeft, scores
 end
 
 def shuffle(libs, size)
-	(((x=rand(size))+1) / (rand(x)+1)).round.times {
+	@shuffle_factor = (((x=rand(size))+1) / (rand(x)+1)).round
+	@shuffle_factor.times {
 		@shuffle_indexes = [rand(@shuffle_low_index), rand(size)]
 		do_swap(libs)
 	}
@@ -133,7 +135,7 @@ File.open("input/#{file_name}", "r") { |input|
 
 			libs_best = libs
 
-			puts "#{@finalScore}: #{file_name}"
+			puts "#{@finalScore}: #{file_name} @ #{@shuffle_factor}"
 			$stdout.flush
 		end
 	end
