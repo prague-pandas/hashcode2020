@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+import os
 
 class library_scanning_strategy:
   def __init__(self, nBooks, nLibraries, nDays, bookScores, libraryList):
@@ -158,3 +159,9 @@ def simulated_annealing(library_set, start_strategy, T, sort_book_at_end=True, l
     plt.figure(figsize=(15,8))
     plt.plot(score_history)
   return current_strategy, score_history
+
+
+list_of_filenames = os.listdir('input')
+input_keys = [filename[0] for filename in list_of_filenames]
+list_of_filepaths = ['input/' + filename for filename in list_of_filenames]
+file_dict = dict(zip(input_keys, list_of_filepaths))
