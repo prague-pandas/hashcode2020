@@ -133,7 +133,7 @@ def simulated_annealing(library_set, start_strategy, T, sort_book_at_end=True, l
     for j in range(swap_step):
       if sort_book_at_end is True:
         swap_type = 'library'
-      swap_type = random.sample(['book', 'library'], weights=[1-library_swap_prob,library_swap_prob])[0]
+      swap_type = random.choices(['book', 'library'], weights=[1-library_swap_prob,library_swap_prob])[0]
       temp_new_strategy = library_set.random_swap_strategy(temp_new_strategy, swap_type)
       if sort_book_at_end is True:
         temp_new_strategy = library_set.sort_books_by_score(temp_new_strategy)
