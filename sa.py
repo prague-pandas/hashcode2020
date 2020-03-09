@@ -119,14 +119,11 @@ class library_scanning_strategy:
         books_to_scan_list_as_string = list(map(lambda x: str(x), library['books_to_scan']))
         f.write(' '.join(books_to_scan_list_as_string))
 
-def simulated_annealing(library_set, start_strategy, T, library_swap_prob=0.9, objective_fn='score', swap_step=1, iteration=1000, plot=True):
-  score_history = np.zeros(0)
+def simulated_annealing(library_set, start_strategy, T, reduce_interval=100, library_swap_prob=0.9, swap_step=1, iteration=1000, plot=True):
+  max_strategy_history = []
   current_strategy = start_strategy
-  if objective_fn == 'score':
-    current_score = library_set.score(current_strategy)
-    max_score = current_score
-  elif objective_fn == 'signup_days':
-    current_score = library_set.scanning_days(current_strategy).sum()
+  current_score = library_set.score(current_strategy)
+  max_score = current_score
   for i in range(iteration):
     # reduce temperature
     T = T * (np.exp((-10)/iteration))
@@ -136,10 +133,6 @@ def simulated_annealing(library_set, start_strategy, T, library_swap_prob=0.9, o
       swap_type = random.choices(['book', 'library'], weights=[1-library_swap_prob,library_swap_prob])[0]
       temp_new_strategy = library_set.random_swap_strategy(temp_new_strategy, swap_type)
     new_strategy = temp_new_strategy
-    if objective_fn == 'score':
-      new_score = library_set.score(new_strategy)
-    elif objective_fn == 'signup_days':
-      new_score = library_set.scanning_days(new_strategy).sum()
     new_score = library_set.score(new_strategy)
     # accept/reject change
     deltaE = (new_score - current_score)
@@ -148,14 +141,19 @@ def simulated_annealing(library_set, start_strategy, T, library_swap_prob=0.9, o
     if (p < metropolis_factor):
       # update
       if new_score > max_score:
-        library_set.output_strategy('output_'+library_set.filename_short+str(new_score)+'.txt', new_strategy)
+        library_set.output_strategy('output/output_'+library_set.filename_short+str(new_score)+'.txt', new_strategy)
         max_score = new_score
-        reduced_new_strategy = library_set.remove_redundancy_and_sort_by_score(new_strategy)
-        reduced_score = library_set.score(reduced_new_strategy)
-        library_set.output_strategy('output_'+library_set.filename_short+str(reduced_score)+'.txt', reduced_new_strategy)
+        max_strategy_history.append(new_strategy)
       current_strategy = new_strategy
       current_score = new_score
-      print(new_score)
+    # reduce the best strategies
+    if ((i%reduce_interval == 0 and i != 0) or (i == iteration - 1)) and (len(max_strategy_history) != 0):
+      max_score_history = list(map(lambda x: library_set.score(x), max_strategy_history))
+      max_strategy = max_strategy_history[np.argsort(-np.array(max_score_history))[0]]
+      reduced_max_strategy = library_set.remove_redundancy_and_sort_by_score(max_strategy)
+      reduced_max_score = library_set.score(reduced_max_strategy)
+      print("Max score {} reduced to {}".format(max_score, reduced_max_score))
+      library_set.output_strategy('output/output_'+library_set.filename_short+str(reduced_max_score)+'.txt', reduced_max_strategy)
   pass
 
 
