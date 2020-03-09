@@ -14,5 +14,5 @@ strategy_at_end_of_stage, score_history = simulated_annealing(
   e.score(special_strategy), 
   swap_step = 2, 
   library_swap_prob = 1,
-  reduce_interval = 10000,
-  iteration = 10000000000)
+  reduce_interval = 500,
+  iteration = 1000000)
