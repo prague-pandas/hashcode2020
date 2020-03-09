@@ -12,7 +12,7 @@ class library_scanning_strategy:
     self.libraryList = libraryList
     self.librarySignupDays = [library['signupDays'] for library in self.libraryList]
     self.libraryBookspDay = [library['books/day'] for library in self.libraryList]
-    self.filename_short = filename.split('/')[2][0]
+    self.filename_short = filename.split('/')[1][0]
   @classmethod
   def from_file(cls, filename):
     with open(filename) as f:
