@@ -154,6 +154,8 @@ def simulated_annealing(library_set, start_strategy, T, reduce_interval=100, lib
       reduced_max_score = library_set.score(reduced_max_strategy)
       print("Max score {} reduced to {}".format(max_score, reduced_max_score))
       library_set.output_strategy('output/output_'+library_set.filename_short+str(reduced_max_score)+'.txt', reduced_max_strategy)
+    if (i%100 == 0):
+      print("Step {} for example {}".format(i,library_set.filename_short))
   pass
 
 
