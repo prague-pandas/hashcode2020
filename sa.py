@@ -4,7 +4,7 @@ import random
 import os
 
 class library_scanning_strategy:
-  def __init__(self, nBooks, nLibraries, nDays, bookScores, libraryList):
+  def __init__(self, nBooks, nLibraries, nDays, bookScores, libraryList, filename):
     self.nBooks = nBooks
     self.nLibraries = nLibraries
     self.nDays = nDays
@@ -12,6 +12,7 @@ class library_scanning_strategy:
     self.libraryList = libraryList
     self.librarySignupDays = [library['signupDays'] for library in self.libraryList]
     self.libraryBookspDay = [library['books/day'] for library in self.libraryList]
+    self.filename_short = filename.split('/')[2][0]
   @classmethod
   def from_file(cls, filename):
     with open(filename) as f:
@@ -24,7 +25,7 @@ class library_scanning_strategy:
         tempDict['nBooks'], tempDict['signupDays'], tempDict['books/day'] = map(lambda x: int(x), lines[(2*i)+2].split(' '))
         tempDict['booksList'] = np.array(list(map(lambda x: int(x), lines[(2*i)+3].split(' '))))
         libraryList.append(tempDict)
-      return cls(nBooks, nLibraries, nDays, bookScores, libraryList)
+      return cls(nBooks, nLibraries, nDays, bookScores, libraryList, filename)
   def book_occurence_matrix(self, strategy):
     """ 
       A generator to yield book occurence matrix for a given strategy,
@@ -118,11 +119,12 @@ class library_scanning_strategy:
         books_to_scan_list_as_string = list(map(lambda x: str(x), library['books_to_scan']))
         f.write(' '.join(books_to_scan_list_as_string))
 
-def simulated_annealing(library_set, start_strategy, T, sort_book_at_end=True, library_swap_prob=0.9, objective_fn='score', swap_step=1, iteration=1000, plot=True):
+def simulated_annealing(library_set, start_strategy, T, library_swap_prob=0.9, objective_fn='score', swap_step=1, iteration=1000, plot=True):
   score_history = np.zeros(0)
   current_strategy = start_strategy
   if objective_fn == 'score':
     current_score = library_set.score(current_strategy)
+    max_score = current_score
   elif objective_fn == 'signup_days':
     current_score = library_set.scanning_days(current_strategy).sum()
   for i in range(iteration):
@@ -131,12 +133,8 @@ def simulated_annealing(library_set, start_strategy, T, sort_book_at_end=True, l
     # swap
     temp_new_strategy = current_strategy
     for j in range(swap_step):
-      if sort_book_at_end is True:
-        swap_type = 'library'
       swap_type = random.choices(['book', 'library'], weights=[1-library_swap_prob,library_swap_prob])[0]
       temp_new_strategy = library_set.random_swap_strategy(temp_new_strategy, swap_type)
-      if sort_book_at_end is True:
-        temp_new_strategy = library_set.sort_books_by_score(temp_new_strategy)
     new_strategy = temp_new_strategy
     if objective_fn == 'score':
       new_score = library_set.score(new_strategy)
@@ -146,19 +144,19 @@ def simulated_annealing(library_set, start_strategy, T, sort_book_at_end=True, l
     # accept/reject change
     deltaE = (new_score - current_score)
     metropolis_factor = min([1, np.exp(deltaE/T)])
-    # print(deltaE)
     p = np.random.random()
     if (p < metropolis_factor):
       # update
-      # print(metropolis_factor)
+      if new_score > max_score:
+        library_set.output_strategy('output_'+library_set.filename_short+str(new_score)+'.txt', new_strategy)
+        max_score = new_score
+        reduced_new_strategy = library_set.remove_redundancy_and_sort_by_score(new_strategy)
+        reduced_score = library_set.score(reduced_new_strategy)
+        library_set.output_strategy('output_'+library_set.filename_short+str(reduced_score)+'.txt', reduced_new_strategy)
       current_strategy = new_strategy
       current_score = new_score
-      score_history = np.concatenate([score_history, [new_score]])
-  # plot scores
-  if plot is True:
-    plt.figure(figsize=(15,8))
-    plt.plot(score_history)
-  return current_strategy, score_history
+      print(new_score)
+  pass
 
 
 list_of_filenames = os.listdir('input')
